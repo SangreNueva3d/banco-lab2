@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Lab 1 v20262 - Front básico</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<h1>Laboratorio 1 Sofia Espinal Vasquez - Angel Yepes</h1>
+
+<div class="config" style="display:none">
+  <label>URL base del backend</label>
+  <input id="baseUrl" value="http://localhost:8088" />
+</div>
+
+<div class="tabs">
+  <button id="tabCustomers" class="active" onclick="switchTab('customers')">Clientes</button>
+  <button id="tabTransfer" onclick="switchTab('transfer')">Transacciones</button>
+  <button id="tabHistory" onclick="switchTab('history')">Historial</button>
+</div>
+
+<!-- ===================== CLIENTES ===================== -->
+<div id="panelCustomers" class="panel active">
+
+  <div class="card">
+    <h2>Crear cliente</h2>
+    <div class="row">
+      <div>
+        <label>Nombre (firstName)</label>
+        <input id="c_firstName" />
+      </div>
+      <div>
+        <label>Apellido (lastName)</label>
+        <input id="c_lastName" />
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label>Número de cuenta (accountNumber)</label>
+        <input id="c_accountNumber" />
+      </div>
+      <div>
+        <label>Balance</label>
+        <input id="c_balance" type="number" step="0.01" />
+      </div>
+    </div>
+    <button class="action" onclick="createCustomer()">Crear cliente</button>
+    <div id="c_createMsg"></div>
+  </div>
+
+  <div class="card">
+    <h2>Buscar cliente por ID</h2>
+    <div class="row">
+      <div>
+        <label>ID</label>
+        <input id="c_searchId" type="number" />
+      </div>
+    </div>
+    <button class="action secondary" onclick="getCustomerById()">Buscar</button>
+    <div id="c_searchMsg"></div>
+  </div>
+
+  <div class="card">
+    <h2>Actualizar cliente</h2>
+    <div class="row">
+      <div>
+        <label>ID del cliente a actualizar</label>
+        <input id="cu_id" type="number" />
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label>Nombre (firstName)</label>
+        <input id="cu_firstName" />
+      </div>
+      <div>
+        <label>Apellido (lastName)</label>
+        <input id="cu_lastName" />
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label>Número de cuenta (accountNumber)</label>
+        <input id="cu_accountNumber" />
+      </div>
+      <div>
+        <label>Balance</label>
+        <input id="cu_balance" type="number" step="0.01" />
+      </div>
+    </div>
+    <button class="action" onclick="updateCustomer()">Actualizar cliente</button>
+    <div id="cu_msg"></div>
+  </div>
+
+  <div class="card">
+    <h2>Eliminar cliente</h2>
+    <div class="row">
+      <div>
+        <label>ID del cliente a eliminar</label>
+        <input id="cd_id" type="number" />
+      </div>
+    </div>
+    <button class="action secondary" onclick="deleteCustomer()">Eliminar cliente</button>
+    <div id="cd_msg"></div>
+  </div>
+
+  <div class="card">
+    <h2>Todos los clientes</h2>
+    <button class="action secondary" onclick="loadCustomers()">Refrescar lista</button>
+    <div id="c_listMsg"></div>
+    <table id="c_table" style="display:none">
+      <thead><tr><th>ID</th><th>Nombre</th><th>Apellido</th><th>Cuenta</th><th>Balance</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+</div>
+
+<!-- ===================== TRANSFERIR ===================== -->
+<div id="panelTransfer" class="panel">
+
+  <div class="card">
+    <h2>Transferir dinero</h2>
+    <div class="row">
+      <div>
+        <label>Cuenta origen (senderAccountNumber)</label>
+        <input id="t_sender" />
+      </div>
+      <div>
+        <label>Cuenta destino (receiverAccountNumber)</label>
+        <input id="t_receiver" />
+      </div>
+    </div>
+    <label>Monto (amount)</label>
+    <input id="t_amount" type="number" step="0.01" />
+    <button class="action" onclick="transferMoney()">Transferir</button>
+    <div id="t_createMsg"></div>
+  </div>
+
+  <div class="card">
+    <h2>Actualizar transacción</h2>
+    <div class="row">
+      <div>
+        <label>ID de la transacción a actualizar</label>
+        <input id="tu_id" type="number" />
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label>Cuenta origen (senderAccountNumber)</label>
+        <input id="tu_sender" />
+      </div>
+      <div>
+        <label>Cuenta destino (receiverAccountNumber)</label>
+        <input id="tu_receiver" />
+      </div>
+    </div>
+    <label>Monto (amount)</label>
+    <input id="tu_amount" type="number" step="0.01" />
+    <button class="action" onclick="updateTransaction()">Actualizar transacción</button>
+    <div id="tu_msg"></div>
+  </div>
+
+  <div class="card">
+    <h2>Eliminar transacción</h2>
+    <div class="row">
+      <div>
+        <label>ID de la transacción a eliminar</label>
+        <input id="td_id" type="number" />
+      </div>
+    </div>
+    <button class="action secondary" onclick="deleteTransaction()">Eliminar transacción</button>
+    <div id="td_msg"></div>
+  </div>
+
+</div>
+
+<!-- ===================== HISTORIAL ===================== -->
+<div id="panelHistory" class="panel">
+
+  <div class="card">
+    <h2>Historial de transacciones</h2>
+    <label>Buscar por</label>
+    <select id="h_mode" onchange="toggleHistoryMode()">
+      <option value="account">Número de cuenta</option>
+      <option value="customerId">ID de cliente</option>
+    </select>
+    <label id="h_inputLabel">Número de cuenta</label>
+    <input id="h_value" />
+    <div class="hint" id="h_hint"></div>
+    <button class="action secondary" onclick="loadTransactions()">Buscar transacciones</button>
+    <div id="t_listMsg"></div>
+    <table id="t_table" style="display:none">
+      <thead><tr><th>ID</th><th>Origen</th><th>Destino</th><th>Monto</th><th>Fecha</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+</div>
+
+<script>
+  function base() {
+    return document.getElementById('baseUrl').value.replace(/\/$/, '');
+  }
+
+  function switchTab(name) {
+    document.getElementById('panelCustomers').classList.toggle('active', name === 'customers');
+    document.getElementById('panelTransfer').classList.toggle('active', name === 'transfer');
+    document.getElementById('panelHistory').classList.toggle('active', name === 'history');
+    document.getElementById('tabCustomers').classList.toggle('active', name === 'customers');
+    document.getElementById('tabTransfer').classList.toggle('active', name === 'transfer');
+    document.getElementById('tabHistory').classList.toggle('active', name === 'history');
+  }
+
+  function toggleHistoryMode() {
+    const mode = document.getElementById('h_mode').value;
+    const label = document.getElementById('h_inputLabel');
+    const hint = document.getElementById('h_hint');
+    if (mode === 'customerId') {
+      label.textContent = 'ID de cliente';
+      hint.textContent = 'El backend solo consulta por número de cuenta, así que primero se busca el cliente (GET /api/customers/{id}) para obtener su cuenta.';
+    } else {
+      label.textContent = 'Número de cuenta';
+      hint.textContent = '';
+    }
+  }
+
+  function showMsg(elId, text, isError) {
+    const el = document.getElementById(elId);
+    el.className = 'msg ' + (isError ? 'err' : 'ok');
+    el.textContent = text;
+  }
+
+  function clearMsg(elId) {
+    const el = document.getElementById(elId);
+    el.className = '';
+    el.textContent = '';
+  }
+
+  // Interpreta la respuesta del backend, que a veces devuelve JSON
+  // y a veces (errores 400) devuelve texto plano.
+  async function readBody(res) {
+    const text = await res.text();
+    try { return JSON.parse(text); } catch (e) { return text; }
+  }
+
+  // ---------- CLIENTES ----------
+
+  async function createCustomer() {
+    clearMsg('c_createMsg');
+    const body = {
+      firstName: document.getElementById('c_firstName').value,
+      lastName: document.getElementById('c_lastName').value,
+      accountNumber: document.getElementById('c_accountNumber').value,
+      balance: parseFloat(document.getElementById('c_balance').value)
+    };
+    try {
+      const res = await fetch(base() + '/api/customers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      const data = await readBody(res);
+      if (!res.ok) throw new Error(typeof data === 'string' ? data : JSON.stringify(data));
+      showMsg('c_createMsg', 'Cliente creado:\n' + JSON.stringify(data, null, 2), false);
+      loadCustomers();
+    } catch (e) {
+      showMsg('c_createMsg', 'Error: ' + e.message, true);
+    }
+  }
+
+  async function getCustomerById() {
+    clearMsg('c_searchMsg');
+    const id = document.getElementById('c_searchId').value;
+    if (!id) { showMsg('c_searchMsg', 'Ingresa un ID', true); return; }
+    try {
+      const res = await fetch(base() + '/api/customers/' + id);
+      const data = await readBody(res);
+      if (!res.ok) throw new Error(typeof data === 'string' ? data : JSON.stringify(data));
+      showMsg('c_searchMsg', JSON.stringify(data, null, 2), false);
+    } catch (e) {
+      showMsg('c_searchMsg', 'Error: ' + e.message, true);
+    }
+  }
+
+  async function updateCustomer() {
+    clearMsg('cu_msg');
+    const id = document.getElementById('cu_id').value;
+    if (!id) { showMsg('cu_msg', 'Ingresa el ID del cliente a actualizar', true); return; }
+    const body = {
+      firstName: document.getElementById('cu_firstName').value,
+      lastName: document.getElementById('cu_lastName').value,
+      accountNumber: document.getElementById('cu_accountNumber').value,
+      balance: parseFloat(document.getElementById('cu_balance').value)
+    };
+    try {
+      const res = await fetch(base() + '/api/customers/' + id, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      const data = await readBody(res);
+      if (!res.ok) throw new Error(typeof data === 'string' ? data : JSON.stringify(data));
+      showMsg('cu_msg', 'Cliente actualizado:\n' + JSON.stringify(data, null, 2), false);
+      loadCustomers();
+    } catch (e) {
+      showMsg('cu_msg', 'Error: ' + e.message, true);
+    }
+  }
+
+  async function deleteCustomer() {
+    clearMsg('cd_msg');
+    const id = document.getElementById('cd_id').value;
+    if (!id) { showMsg('cd_msg', 'Ingresa el ID del cliente a eliminar', true); return; }
+    try {
+      const res = await fetch(base() + '/api/customers/' + id, { method: 'DELETE' });
+      if (!res.ok) {
+        const data = await readBody(res);
+        throw new Error(typeof data === 'string' ? data : JSON.stringify(data));
+      }
+      showMsg('cd_msg', 'Cliente ' + id + ' eliminado.', false);
+      loadCustomers();
+    } catch (e) {
+      showMsg('cd_msg', 'Error: ' + e.message, true);
+    }
+  }
+
+  async function loadCustomers() {
+    clearMsg('c_listMsg');
+    const table = document.getElementById('c_table');
+    const tbody = table.querySelector('tbody');
+    tbody.innerHTML = '';
+    try {
+      const res = await fetch(base() + '/api/customers');
+      const data = await readBody(res);
+      if (!res.ok) throw new Error(typeof data === 'string' ? data : JSON.stringify(data));
+      if (!Array.isArray(data) || data.length === 0) {
+        showMsg('c_listMsg', 'No hay clientes.', false);
+        table.style.display = 'none';
+        return;
+      }
+      data.forEach(c => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${c.id}</td><td>${c.firstName}</td><td>${c.lastName}</td><td>${c.accountNumber}</td><td>${c.balance}</td>`;
+        tbody.appendChild(tr);
+      });
+      table.style.display = '';
+    } catch (e) {
+      showMsg('c_listMsg', 'Error: ' + e.message, true);
+      table.style.display = 'none';
+    }
+  }
+
+  // ---------- TRANSFERIR ----------
+
+  async function transferMoney() {
+    clearMsg('t_createMsg');
+    const body = {
+      senderAccountNumber: document.getElementById('t_sender').value,
+      receiverAccountNumber: document.getElementById('t_receiver').value,
+      amount: parseFloat(document.getElementById('t_amount').value)
+    };
+    try {
+      const res = await fetch(base() + '/api/transactions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      const data = await readBody(res);
+      if (!res.ok) throw new Error(typeof data === 'string' ? data : JSON.stringify(data));
+      showMsg('t_createMsg', 'Transacción realizada:\n' + JSON.stringify(data, null, 2), false);
+    } catch (e) {
+      showMsg('t_createMsg', 'Error: ' + e.message, true);
+    }
+  }
+
+  // ---------- HISTORIAL ----------
+
+  async function loadTransactions() {
+    clearMsg('t_listMsg');
+    const mode = document.getElementById('h_mode').value;
+    const value = document.getElementById('h_value').value;
+    const table = document.getElementById('t_table');
+    const tbody = table.querySelector('tbody');
+    tbody.innerHTML = '';
+
+    if (!value) { showMsg('t_listMsg', 'Ingresa un valor de búsqueda', true); table.style.display = 'none'; return; }
+
+    try {
+      let accountNumber = value;
+
+      // Si se busca por ID de cliente, primero resolvemos su accountNumber,
+      // porque el backend solo expone /api/transactions/{accountNumber}.
+      if (mode === 'customerId') {
+        const custRes = await fetch(base() + '/api/customers/' + value);
+        const custData = await readBody(custRes);
+        if (!custRes.ok) throw new Error('No se encontró el cliente con ID ' + value + ': ' + (typeof custData === 'string' ? custData : JSON.stringify(custData)));
+        accountNumber = custData.accountNumber;
+      }
+
+      const res = await fetch(base() + '/api/transactions/' + encodeURIComponent(accountNumber));
+      const data = await readBody(res);
+      if (!res.ok) throw new Error(typeof data === 'string' ? data : JSON.stringify(data));
+      if (!Array.isArray(data) || data.length === 0) {
+        showMsg('t_listMsg', 'No hay transacciones para esa cuenta (' + accountNumber + ').', false);
+        table.style.display = 'none';
+        return;
+      }
+      data.forEach(t => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${t.id ?? ''}</td><td>${t.senderAccountNumber}</td><td>${t.receiverAccountNumber}</td><td>${t.amount}</td><td>${t.timestamp ?? ''}</td>`;
+        tbody.appendChild(tr);
+      });
+      table.style.display = '';
+    } catch (e) {
+      showMsg('t_listMsg', 'Error: ' + e.message, true);
+      table.style.display = 'none';
+    }
+  }
+
+  async function updateTransaction() {
+    clearMsg('tu_msg');
+    const id = document.getElementById('tu_id').value;
+    if (!id) { showMsg('tu_msg', 'Ingresa el ID de la transacción a actualizar', true); return; }
+    const body = {
+      senderAccountNumber: document.getElementById('tu_sender').value,
+      receiverAccountNumber: document.getElementById('tu_receiver').value,
+      amount: parseFloat(document.getElementById('tu_amount').value)
+    };
+    try {
+      const res = await fetch(base() + '/api/transactions/' + id, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      const data = await readBody(res);
+      if (!res.ok) throw new Error(typeof data === 'string' ? data : JSON.stringify(data));
+      showMsg('tu_msg', 'Transacción actualizada:\n' + JSON.stringify(data, null, 2), false);
+    } catch (e) {
+      showMsg('tu_msg', 'Error: ' + e.message, true);
+    }
+  }
+
+  async function deleteTransaction() {
+    clearMsg('td_msg');
+    const id = document.getElementById('td_id').value;
+    if (!id) { showMsg('td_msg', 'Ingresa el ID de la transacción a eliminar', true); return; }
+    try {
+      const res = await fetch(base() + '/api/transactions/' + id, { method: 'DELETE' });
+      if (!res.ok) {
+        const data = await readBody(res);
+        throw new Error(typeof data === 'string' ? data : JSON.stringify(data));
+      }
+      showMsg('td_msg', 'Transacción ' + id + ' eliminada.', false);
+    } catch (e) {
+      showMsg('td_msg', 'Error: ' + e.message, true);
+    }
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,105 @@
+name: CI/CD Pipeline
+
+on:
+  # Permite lanzar el pipeline a mano desde la pestaña Actions
+  workflow_dispatch:
+  # Trunk based: main es el tronco; las ramas cortas feature/** también corren el pipeline
+  push:
+    branches:
+      - main
+      - "feature/**"   # <-- si te piden el nombre exacto, reemplázalo (ej: feature/validar-monto)
+  # Cada Pull Request hacia main también se valida antes de hacer el merge
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  # 1) Pruebas unitarias (no necesitan MySQL: usan Mockito)
+  tests:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven            # cachea ~/.m2 para que el pipeline sea más rápido
+      - name: Run tests
+        run: mvn -B test
+
+  # 2) Análisis de calidad + cobertura (JaCoCo -> SonarCloud)
+  sonar:
+    name: SonarCloud analysis
+    needs: tests                  # si los tests fallan, Sonar no corre
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0          # historial completo: Sonar lo usa para detectar código nuevo
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+      - name: Build, test y análisis Sonar
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}   # el scanner lee esta variable solo
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+
+  # 3) Construir el JAR y guardarlo como artefacto
+  build:
+    name: Build
+    needs: sonar
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+      - name: Build with Maven
+        run: mvn -B package -DskipTests
+      - name: Upload JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: jar-banco
+          path: target/lab1v20262.jar   # el nombre sale de <finalName> en el pom.xml
+
+  # 4) Construir la imagen Docker y subirla a Docker Hub (solo desde main)
+  docker:
+    name: Docker image
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Login a Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}   # usa un Access Token de Docker Hub, no tu contraseña
+      - name: Build & push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/banco-api:latest
+            ${{ secrets.DOCKER_USERNAME }}/banco-api:${{ github.sha }}
+
+  # 5) Desplegar en Render (solo desde main): le avisa que descargue la imagen nueva
+  deploy:
+    name: Deploy to Render
+    needs: docker
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render deploy hook
+        env:
+          RENDER_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: curl --fail --silent --show-error -X POST "$RENDER_HOOK"
