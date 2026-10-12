@@ -10,7 +10,7 @@ import jakarta.persistence.*;
 public class Customer {
     //atributos
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(unique = true, nullable = false)
     private String accountNumber;
