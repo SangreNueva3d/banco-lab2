@@ -15,8 +15,8 @@
 	<properties>
 		<java.version>17</java.version>
 		<mapstruct.version>1.5.5.Final</mapstruct.version>
-		<sonar.projectKey>AngelYepes3ds_banco-lab2</sonar.projectKey>
-		<sonar.organization>AngelYepes3ds</sonar.organization>
+		<sonar.projectKey>sangrenueva3d_banco-lab2</sonar.projectKey>
+		<sonar.organization>sangrenueva3d</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 	</properties>
 	<dependencies>
