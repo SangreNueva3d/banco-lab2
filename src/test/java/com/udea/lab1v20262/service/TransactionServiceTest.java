@@ -87,6 +87,23 @@ class TransactionServiceTest {
     }
 
     @Test
+    void transferMoney_conMontoNegativo_lanzaExcepcionSinTocarLaBD() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> transactionService.transferMoney(request("ACC-001", "ACC-002", -50.0)));
+
+        assertTrue(ex.getMessage().contains("mayor que cero"));
+        verifyNoInteractions(customerRepository, transactionRepository);
+    }
+
+    @Test
+    void transferMoney_conMontoNulo_lanzaExcepcion() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> transactionService.transferMoney(request("ACC-001", "ACC-002", null)));
+
+        assertTrue(ex.getMessage().contains("mayor que cero"));
+    }
+
+    @Test
     void transferMoney_remitenteNoExiste_lanzaExcepcion() {
         when(customerRepository.findByAccountNumber("ACC-001")).thenReturn(Optional.empty());
 

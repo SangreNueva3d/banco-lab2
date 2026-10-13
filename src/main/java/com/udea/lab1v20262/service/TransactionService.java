@@ -26,6 +26,10 @@ public class TransactionService {
         if (transactionDTO.getSenderAccountNumber() == null || transactionDTO.getReceiverAccountNumber() == null) {
             throw new IllegalArgumentException("Los números de cuenta del remitente y receptor son obligatorios.");
         }
+        // Validar que el monto exista y sea positivo
+        if (transactionDTO.getAmount() == null || transactionDTO.getAmount() <= 0) {
+            throw new IllegalArgumentException("El monto debe ser mayor que cero.");
+        }
 
         // Buscar los clientes por número de cuenta
         Customer sender = customerRepository.findByAccountNumber(transactionDTO.getSenderAccountNumber())
