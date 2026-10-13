@@ -1,10 +1,10 @@
 [![CI/CD Pipeline](https://github.com/SangreNueva3d/banco-lab2/actions/workflows/build.yml/badge.svg)](https://github.com/SangreNueva3d/banco-lab2/actions/workflows/build.yml)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=sangrenueva3d_banco-lab2&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=sangrenueva3d_banco-lab2)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=sangrenueva3d_banco-lab2&metric=coverage)](https://sonarcloud.io/summary/new_code?id=sangrenueva3d_banco-lab2)
-[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=sangrenueva3d_banco-lab2&metric=bugs)](https://sonarcloud.io/summary/new_code?id=sangrenueva3d_banco-lab2)
-[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=sangrenueva3d_banco-lab2&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=sangrenueva3d_banco-lab2)
-[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=sangrenueva3d_banco-lab2&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=sangrenueva3d_banco-lab2)
-[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=sangrenueva3d_banco-lab2&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=sangrenueva3d_banco-lab2)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=SangreNueva3d_banco-lab2&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=SangreNueva3d_banco-lab2)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=SangreNueva3d_banco-lab2&metric=coverage)](https://sonarcloud.io/summary/new_code?id=SangreNueva3d_banco-lab2)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=SangreNueva3d_banco-lab2&metric=bugs)](https://sonarcloud.io/summary/new_code?id=SangreNueva3d_banco-lab2)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=SangreNueva3d_banco-lab2&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=SangreNueva3d_banco-lab2)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=SangreNueva3d_banco-lab2&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=SangreNueva3d_banco-lab2)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=SangreNueva3d_banco-lab2&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=SangreNueva3d_banco-lab2)
 
 # Banco - API REST con CI/CD
 
