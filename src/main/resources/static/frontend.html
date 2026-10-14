@@ -11,7 +11,7 @@
 
 <div class="config" style="display:none">
   <label>URL base del backend</label>
-  <input id="baseUrl" value="http://localhost:8088" />
+  <input id="baseUrl" />
 </div>
 
 <div class="tabs">
@@ -200,6 +200,7 @@
 </div>
 
 <script>
+  document.getElementById('baseUrl').value = window.location.origin;
   function base() {
     return document.getElementById('baseUrl').value.replace(/\/$/, '');
   }
